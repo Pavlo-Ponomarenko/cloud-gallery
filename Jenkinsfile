@@ -26,7 +26,7 @@ pipeline {
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
                     sh 'docker build -t cloud-gallery .'
-                    sh 'docker tag $cloud-gallery:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cloud-gallery:$IMAGE_TAG'
+                    sh 'docker tag cloud-gallery:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cloud-gallery:$IMAGE_TAG'
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$cloud-gallery:$IMAGE_TAG'
+                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cloud-gallery:$IMAGE_TAG'
                 }
             }
         }
