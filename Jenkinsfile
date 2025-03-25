@@ -13,9 +13,9 @@ pipeline {
                     string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     sh '''
-                    $(which aws) configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-                    $(which aws) configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-                    $(which aws) configure set region $AWS_REGION
+                    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                    aws configure set region $AWS_REGION
                     '''
                 }
             }
@@ -25,8 +25,8 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh '$(which docker) build -t cloud-gallery .'
-                    sh '$(which docker) tag $ECR_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG'
+                    sh 'docker build -t cloud-gallery .'
+                    sh 'docker tag $ECR_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG'
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh '$(which docker) push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG'
+                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG'
                 }
             }
         }
