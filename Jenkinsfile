@@ -2,7 +2,6 @@ pipeline {
     agent any
     environment {
         AWS_REGION = 'eu-central-1'
-        ECR_REPO = 'cloud-gallery-repo'
         IMAGE_TAG = 'latest'
     }
     stages {
