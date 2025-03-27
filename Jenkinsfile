@@ -37,8 +37,13 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh 'aws ecr list-images --repository-name $IMAGE_NAME --query \'imageIds[*]\' --output json | aws ecr batch-delete-image --repository-name $IMAGE_NAME --image-ids file:///dev/stdin'
-                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG'
+                    sh '''
+                    IMAGES=$(aws ecr list-images --repository-name $IMAGE_NAME --query \'imageIds[*]\' --output json)
+                    if [[ $IMAGES != "[]" ]]; then
+                        aws ecr batch-delete-image --repository-name cloud-gallery --image-ids "$IMAGES"
+                    fi
+                    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+                    '''
                 }
             }
         }
