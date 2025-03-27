@@ -3,6 +3,7 @@ pipeline {
     environment {
         AWS_REGION = 'eu-central-1'
         IMAGE_TAG = 'latest'
+        IMAGE_NAME = 'cloud-gallery'
     }
     stages {
         stage('Authenticate AWS CLI') {
@@ -26,8 +27,8 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh 'docker build -t cloud-gallery .'
-                    sh 'docker tag cloud-gallery:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cloud-gallery:$IMAGE_TAG'
+                    sh 'docker build -t $IMAGE_NAME .'
+                    sh 'docker tag $IMAGE_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG'
                 }
             }
         }
@@ -36,7 +37,8 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
-                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cloud-gallery:$IMAGE_TAG'
+                    sh 'aws ecr list-images --repository-name $IMAGE_NAME --query \'imageIds[*]\' --output json | aws ecr batch-delete-image --repository-name $IMAGE_NAME --image-ids file:///dev/stdin'
+                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG'
                 }
             }
         }
