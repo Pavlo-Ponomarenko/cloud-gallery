@@ -32,18 +32,29 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker Image to ECR') {
+        stage('Delete previous images from ECR') {
             steps {
                 withCredentials([
                     string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
                 ]) {
                     sh '''
-                    IMAGES=$(aws ecr list-images --repository-name $IMAGE_NAME --query \'imageIds[*]\' --output json)
-                    if [[ $IMAGES != "[]" ]]; then
-                        aws ecr batch-delete-image --repository-name cloud-gallery --image-ids "$IMAGES"
+                    DIGESTS=$(aws ecr list-images --repository-name cloud-gallery --query 'imageIds[*].imageDigest' --output json)
+                    if [[ $DIGESTS != "[]" ]]; then
+                        for DIGEST in $(echo "$DIGESTS" | jq -r '.[]'); do
+                            aws ecr batch-delete-image --repository-name cloud-gallery --image-ids imageDigest=$DIGEST
+                        done
                     fi
                     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
                     '''
+                }
+            }
+        }
+        stage('Push Docker Image to ECR') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'AWS_ACCOUNT_ID', variable: 'AWS_ACCOUNT_ID'),
+                ]) {
+                    sh 'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG\
                 }
             }
         }
