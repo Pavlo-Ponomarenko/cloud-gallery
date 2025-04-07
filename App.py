@@ -1,8 +1,11 @@
 import os
+import logging
 from flask import Flask
 from flask import render_template
 
 LOCAL_IMAGES = "static"
+
+logging.basicConfig(filename='app.log', level=logging.INFO)
 
 app = Flask(__name__)
 
