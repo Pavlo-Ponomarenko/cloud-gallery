@@ -6,7 +6,7 @@ from flask import render_template
 
 LOCAL_IMAGES = 'static'
 IMAGES_SOURCE = os.getenv('IMAGES_SOURCE')
-BUCKET_NAME = 'gallery_bucket'
+BUCKET_NAME = 'images-cloud-storage'
 
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
