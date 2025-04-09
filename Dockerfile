@@ -6,7 +6,9 @@ COPY . .
 
 RUN chmod +x run.sh
 
-RUN pip install --no-cache-dir flask
+RUN pip install --no-cache-dir flask boto3
+
+ENV IMAGES_SOURCE=local
 
 EXPOSE 5000
 
